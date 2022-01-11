@@ -1,6 +1,6 @@
 """
  - 去CSDN把需要爬取的文章地址粘贴复制到csdn_url.txt中,一行一个地址;
- - 文章题目如果有/,会被删除掉;
+ - 文章题目如果有/,会被删除掉, '会被替换成";
  - 如果是想把文章放到github page上, 可以放开42, 44行.
 """
 import requests, os, gne, html2text, kuser_agent
@@ -19,7 +19,7 @@ for url in bar:
     # 2.提取关键内容
     extractor = gne.GeneralNewsExtractor()
     keyinfo = extractor.extract(requests.get(url=url,headers={'User-Agent':kuser_agent.get()}).text)
-    title = keyinfo["title"].replace("/", "")
+    title = keyinfo["title"].replace("/", "").replace("'", "\"")
     date = keyinfo["publish_time"].split(" ")[0]
     file_name = f'{date}-{title}.md' 
     bar.set_postfix(name=file_name)
@@ -39,7 +39,7 @@ for url in bar:
         result = result.replace(info, '')
 
     # 5. 保存内容到本地
-    # head = f"---\ntitle: '{title}'\ndate: {date}\npermalink: /posts/{date.split('-')[0]}/{date.split('-')[1]}/{title}/\n---\n\n---\n\n"
+    # head = f"---\ntitle: '{title}'\ndate: {date}\npermalink: /posts/{date.split('-')[0]}/{date.split('-')[1]}/{title.replace(":","")}/\n---\n\n---\n\n"
     with open(file_name, 'w') as f:
         # f.write(head)
         f.write(result.strip())
