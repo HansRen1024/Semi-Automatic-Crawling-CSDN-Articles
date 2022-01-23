@@ -1,6 +1,8 @@
 """
  - 去CSDN把需要爬取的文章地址粘贴复制到csdn_url.txt中,一行一个地址;
- - 文章题目如果有/,会被删除掉, '会被替换成";
+ - 文章题目如果有/,会被删除掉；
+ - Linux 系统的话'会被替换成";
+ - Win 系统需要删掉所有引号和冒号等乱七八糟的符号, 否则clone会报路径错误;
  - 如果是想把文章放到github page上, 可以放开42, 44行.
 """
 import requests, os, gne, html2text, kuser_agent
@@ -19,7 +21,8 @@ for url in bar:
     # 2.提取关键内容
     extractor = gne.GeneralNewsExtractor()
     keyinfo = extractor.extract(requests.get(url=url,headers={'User-Agent':kuser_agent.get()}).text)
-    title = keyinfo["title"].replace("/", "").replace("'", "\"")
+    title = keyinfo["title"].replace("/", "").replace("'", "\"") # linux
+#     title = keyinfo["title"].replace("/", "").replace("'", "").replace(":", "") # Win
     date = keyinfo["publish_time"].split(" ")[0]
     file_name = f'{date}-{title}.md' 
     bar.set_postfix(name=file_name)
